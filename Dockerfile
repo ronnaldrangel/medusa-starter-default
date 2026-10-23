@@ -20,5 +20,6 @@ RUN apk add --no-cache libc6-compat
 # `medusa build` deja la app autocontenida en .medusa/server
 COPY --from=build /app/.medusa/server ./
 RUN npm install --omit=dev --no-audit --no-fund
+COPY dbcheck.js ./dbcheck.js
 EXPOSE 9000
 CMD ["npm", "run", "start"]
