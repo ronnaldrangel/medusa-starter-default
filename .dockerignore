@@ -1,0 +1,9 @@
+node_modules
+.medusa
+.git
+.github
+.vscode
+integration-tests
+*.log
+.env
+.env.local
