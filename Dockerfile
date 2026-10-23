@@ -20,7 +20,5 @@ RUN apk add --no-cache libc6-compat
 # `medusa build` deja la app autocontenida en .medusa/server
 COPY --from=build /app/.medusa/server ./
 RUN npm install --omit=dev --no-audit --no-fund
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 EXPOSE 9000
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["npm", "run", "start"]

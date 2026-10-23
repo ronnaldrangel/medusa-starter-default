@@ -1,0 +1,45 @@
+services:
+  # One-shot: migraciones antes de arrancar el server.
+  # MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT sube el limite por defecto de 10s.
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: medusa-app:latest
+    command: ["sh", "-c", "n=0; until npx medusa db:migrate; do n=$$((n+1)); [ $$n -ge 6 ] && exit 1; echo retry $$n; sleep 10; done"]
+    env_file: .env
+    environment:
+      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "60000"
+    restart: "no"
+    networks:
+      - dokploy-network
+
+  server:
+    image: medusa-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "9000"
+      MEDUSA_WORKER_MODE: shared
+      DISABLE_MEDUSA_ADMIN: "false"
+      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "60000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    expose:
+      - "9000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
