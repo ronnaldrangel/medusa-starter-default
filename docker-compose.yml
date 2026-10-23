@@ -11,10 +11,8 @@ services:
 
   migrate:
     image: medusa-app:latest
-    command: ["sh", "-c", "n=0; until npx medusa db:migrate; do n=$$((n+1)); [ $$n -ge 3 ] && exit 1; sleep 10; done"]
+    command: ["sh", "-c", "MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT=15000 DEBUG='knex:*' NODE_DEBUG=net npx medusa db:migrate; echo EXIT=$?; sleep 3600"]
     env_file: .env
-    environment:
-      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "60000"
     restart: "no"
     networks:
       - dokploy-network
