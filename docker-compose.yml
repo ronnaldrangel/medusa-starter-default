@@ -11,7 +11,7 @@ services:
 
   migrate:
     image: medusa-app:latest
-    command: ["sh", "-c", "MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT=15000 DEBUG='knex:*' NODE_DEBUG=net npx medusa db:migrate; echo EXIT=$?; sleep 3600"]
+    command: ["sh", "-c", "MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT=180000 npx medusa db:migrate > /tmp/migrate.log 2>&1; echo EXIT=$? >> /tmp/migrate.log; sleep 3600"]
     env_file: .env
     restart: "no"
     networks:
@@ -25,7 +25,7 @@ services:
       PORT: "9000"
       MEDUSA_WORKER_MODE: shared
       DISABLE_MEDUSA_ADMIN: "false"
-      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "60000"
+      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "180000"
     expose:
       - "9000"
     networks:
