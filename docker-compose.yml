@@ -9,6 +9,30 @@ services:
     networks:
       - dokploy-network
 
+  migrate:
+    image: medusa-app:latest
+    command: ["sh", "-c", "n=0; until npx medusa db:migrate; do n=$$((n+1)); [ $$n -ge 3 ] && exit 1; sleep 10; done"]
+    env_file: .env
+    environment:
+      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "60000"
+    restart: "no"
+    networks:
+      - dokploy-network
+
+  server:
+    image: medusa-app:latest
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "9000"
+      MEDUSA_WORKER_MODE: shared
+      DISABLE_MEDUSA_ADMIN: "false"
+      MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT: "60000"
+    expose:
+      - "9000"
+    networks:
+      - dokploy-network
+
 networks:
   dokploy-network:
     external: true
