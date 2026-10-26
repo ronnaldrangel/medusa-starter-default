@@ -26,6 +26,25 @@ module.exports = defineConfig({
   // que pierden eventos, jobs y locks al reiniciar el contenedor.
   modules: [
     {
+      resolve: "./src/modules/shalom",
+    },
+    {
+      resolve: "@medusajs/medusa/fulfillment",
+      options: {
+        providers: [
+          // Al declarar proveedores hay que repetir el manual o deja de cargarse.
+          {
+            resolve: "@medusajs/medusa/fulfillment-manual",
+            id: "manual",
+          },
+          {
+            resolve: "./src/modules/shalom-fulfillment",
+            id: "shalom",
+          },
+        ],
+      },
+    },
+    {
       resolve: "@medusajs/medusa/cache-redis",
       options: { redisUrl: process.env.REDIS_URL },
     },
