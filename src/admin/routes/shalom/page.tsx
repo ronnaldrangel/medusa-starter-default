@@ -451,10 +451,23 @@ function ShipmentsCard({ ready }: { ready: boolean }) {
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  {s.status !== "creada" && (
-                    <Button size="small" disabled={!ready} onClick={() => setSelected(s)}>
-                      Aprobar
-                    </Button>
+                  {(s.status === "pendiente" || s.status === "error") && (
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        size="small"
+                        variant="transparent"
+                        onClick={async () => {
+                          if (!window.confirm(`¿Descartar el envío del pedido #${s.order_display_id}?`)) return
+                          await api(`/shipments/${s.id}/discard`, { method: "POST" }).catch((e) => toast.error(e.message))
+                          load()
+                        }}
+                      >
+                        Descartar
+                      </Button>
+                      <Button size="small" disabled={!ready} onClick={() => setSelected(s)}>
+                        Aprobar
+                      </Button>
+                    </div>
                   )}
                 </Table.Cell>
               </Table.Row>
