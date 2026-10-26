@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: medusa-app:latest
+    # Sin esto compose reutiliza medusa-app:latest y no recompila los cambios.
+    pull_policy: build
     command: ["sh", "-c", "n=0; until npx medusa db:migrate; do n=$$((n+1)); [ $$n -ge 6 ] && exit 1; echo retry $$n; sleep 10; done"]
     env_file: .env
     environment:
@@ -15,6 +17,7 @@ services:
 
   server:
     image: medusa-app:latest
+    pull_policy: build
     build:
       context: .
       dockerfile: Dockerfile
